@@ -14,16 +14,26 @@ public class Server {
     private static List<ClientHandler> clients = new ArrayList<>();
     private static final String CHARSET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
+    private String filename;
+    private String username;
     private static String fileLine;
     private static String passwordHash;
     private static String hashMethod;
     private static String salt;
     private static String saltPasswordHash;
-    private static String crackingMethod;
+
+    private long start;
+
+    public Server(String filename, String username) {
+        this.filename = filename;
+        this.username = username;
+    }
 
     private void startServer() {
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
-            System.out.println("Server started on port " + PORT);
+            System.out.println("--------------------------------------------------------------------");
+            System.out.println("Server started on port: " + PORT);
+            System.out.println("--------------------------------------------------------------------");
 
             Thread commandThread = new Thread(() -> handleServerCommands());
             commandThread.start();
@@ -42,8 +52,14 @@ public class Server {
     }
 
     public synchronized void passwordFound() {
-        System.out.println("Password has been found! Stopping all clients...");
+        long elapsedTimeSeconds = (System.nanoTime() - start) / 1000000000;
+        long minutes = elapsedTimeSeconds / 60;
+        long reminderSeconds = elapsedTimeSeconds % 60;
+        System.out.println("Elapsed time: " + minutes + " minutes and " + reminderSeconds + " seconds.");
+
+        System.out.println("\nPassword found. Stopping all clients...");
         broadCastMessage("STOP");
+
         System.exit(0);
     }
 
@@ -54,6 +70,10 @@ public class Server {
             switch (command.toLowerCase()) {
                 case "start":
                     sendCrackInfo();
+                    start = System.nanoTime();
+                    if (!clients.isEmpty()) {
+                        System.out.println("Clients initiated attempt to crack password...");
+                    }
                     break;
                 case "stop":
                     System.out.println("Stopping all clients.");
@@ -71,14 +91,15 @@ public class Server {
 
     public void sendCrackInfo() {
         synchronized (clients) {
-            readFile("shadow.txt", "testmd5");
+            readFile(filename, username);
 
             clients.removeIf(client -> !client.isConnected());
-            System.out.println("Number of clients: " + clients.size());
 
             if (clients.isEmpty()) {
                 System.out.println("No clients connected.");
                 return;
+            } else {
+                System.out.println("Number of clients: " + clients.size());
             }
 
             int charsetLength = CHARSET.length();
@@ -96,7 +117,6 @@ public class Server {
                 }
 
                 String prefixRange = CHARSET.substring(startIdx, endIdx);
-//                String message = "START: " + prefixRange;
 
                 String message = "HASH_INFO";
                 message += "\n";
@@ -108,7 +128,6 @@ public class Server {
 
                 clients.get(i).sendMessage(message);
                 System.out.println("Sent range: " + prefixRange + " to client " + i);
-
             }
         }
     }
@@ -157,25 +176,20 @@ public class Server {
     }
 
     public static void main(String[] args) {
-            Server server = new Server();
-            server.startServer();
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("--------------------------------------------------------------------");
+        System.out.print("Enter file name: ");
+        String filename = scanner.nextLine();
 
-//        try (ServerSocket serverSocket = new ServerSocket(PORT)) {
-//            System.out.println("Server started on port " + PORT);
-//
-//            Thread commandThread = new Thread(() -> handleServerCommands());
-//            commandThread.start();
-//
-//            while (true) {
-//                Socket clientSocket = serverSocket.accept();
-//                System.out.println("New client connected: " + clientSocket);
-//
-//                ClientHandler clientHandler = new ClientHandler(clientSocket, server);
-//                clients.add(clientHandler);
-//                new Thread(clientHandler).start();
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        System.out.print("Enter Username: ");
+        String username = scanner.nextLine();
+
+//        System.out.println("Which method would you like?\n(1) Brute Force\n(2) Dictionary");
+//        String methodPicked = scanner.nextLine();
+
+        Server server = new Server(filename, username);
+        server.startServer();
+
+        scanner.close();
     }
 }

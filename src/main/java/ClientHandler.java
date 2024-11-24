@@ -6,7 +6,6 @@ public class ClientHandler implements Runnable {
     private Server server;
     private Socket socket;
     private BufferedWriter out;
-//    private BufferedWriter out2;
     private BufferedReader in;
 
     public ClientHandler(Socket socket, Server server) {
@@ -21,7 +20,6 @@ public class ClientHandler implements Runnable {
     }
 
     public void sendMessage(String message) {
-//        out.println(message);
         try {
             out.write(message);
             out.newLine();
@@ -51,18 +49,14 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    public void clientFoundPassword() {
-        System.out.println("Client " + socket + " send: Found");
-        server.passwordFound();
-    }
-
     @Override
     public void run() {
         try {
             String inputLine;
             while ((inputLine = in.readLine()) != null) {
                 if (inputLine.equals("FOUND")) {
-                    System.out.println("Client " + socket + " send: Found");
+                    String password = in.readLine();
+                    System.out.println("Client " + socket + " says password found. Password: " + password);
                     server.passwordFound();
                 }
             }

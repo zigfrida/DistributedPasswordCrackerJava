@@ -8,8 +8,8 @@ public class PasswordCracker {
     private String prefixRange;
     private String salt;
     private String saltPasswordHash;
+    private String password;
     private volatile boolean passwordFound = false;
-    private volatile boolean shouldStop = false;
 
     public PasswordCracker(String prefixRange, String salt, String saltPasswordHash) {
         this.prefixRange = prefixRange;
@@ -17,9 +17,12 @@ public class PasswordCracker {
         this.saltPasswordHash = saltPasswordHash;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
     public boolean bruteForceThreads() {
         System.out.println("Starting to crack password...");
-        System.out.println("Client prefix range: " + prefixRange);
         long start = System.nanoTime();
 
         // Instead of dividing CHARSET, we'll divide the prefixRange for first character
@@ -75,6 +78,7 @@ public class PasswordCracker {
         if (length > 0 && checkGuessAndPassword(prefix, this.saltPasswordHash)) {
             passwordFound = true;
             System.out.println(Thread.currentThread().getName() + " found the password: " + prefix);
+            password = prefix;
 
             // Interrupt all other threads
             Thread[] activeThreads = Thread.getAllStackTraces().keySet().toArray(new Thread[0]);

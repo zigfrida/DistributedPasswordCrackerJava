@@ -9,25 +9,23 @@ public class Client {
     private static String prefixRange = "FGHIJKLMNOPQRSTUVWXYZ0123456789";
 
     private Socket socket;
-//    private PrintWriter out;
     private BufferedWriter out;
     private BufferedReader in;
 
     private Thread crackerThread;
     private boolean found = false;
+    private String password = "";
 
     PasswordCracker cracker;
 
     public Client(Socket socket) {
         try {
             this.socket = socket;
-//            this.out = new PrintWriter(socket.getOutputStream(), true);
             this.out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         } catch (IOException e) {
-
+            closeEverything();
         }
-
     }
 
     public void sendMessage() {
@@ -36,7 +34,6 @@ public class Client {
             while (true) {
                 String userInput = scanner.nextLine();
                 if (userInput.equalsIgnoreCase("found")) {
-//                out.println("FOUNT");
                     out.write("FOUND");
                     out.newLine();
                     out.flush();
@@ -56,19 +53,38 @@ public class Client {
             }
             scanner.close();
         } catch (IOException e) {
-
+            closeEverything();
         }
     }
 
     public void checkTerminate() {
         try {
             if (found) {
+                password = cracker.getPassword();
                 out.write("FOUND");
+                out.newLine();
+                out.write(password);
                 out.newLine();
                 out.flush();
             }
         } catch (IOException e) {
 
+        }
+    }
+
+    private void closeEverything() {
+        try {
+            if (out != null) {
+                out.close();
+            }
+            if (in != null) {
+                in.close();
+            }
+            if (socket != null){
+                socket.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -79,7 +95,6 @@ public class Client {
                 try {
                     String serverMessage;
 
-//                    while((serverMessage = in.readLine()) != null) {
                     while (socket.isConnected()) {
                         serverMessage = in.readLine();
                         if (serverMessage == null) break;
@@ -88,7 +103,6 @@ public class Client {
                         if (serverMessage.startsWith("START: ")) {
                             prefixRange = serverMessage.substring(6);
                             System.out.println("Received prefix range: " + prefixRange);
-//                            break;
                         } else if ("HASH_INFO".startsWith(serverMessage)) {
                             String salt = in.readLine();
                             String saltPasswordHash = in.readLine();
@@ -103,26 +117,15 @@ public class Client {
                             });
                             crackerThread.start();
                         } else if (serverMessage.equals("STOP")) {
-                            System.out.println("Received stop command");
-                            try {
-                                if (out != null) {
-                                    out.close();
-                                }
-                                if (in != null) {
-                                    in.close();
-                                }
-                                if (socket != null){
-                                    socket.close();
-                                }
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
+                            System.out.println("Received stop command. Terminating Client.");
+                            closeEverything();
                             System.exit(0);
                             break;
                         }
                     }
                 } catch (IOException e) {
-                    System.out.println("Disconnected from server");
+                    System.out.println("Disconnected from server.");
+                    closeEverything();
                     System.exit(0);
                 }
             }
@@ -133,6 +136,9 @@ public class Client {
         try {
             Socket socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
             Client client = new Client(socket);
+            System.out.println("--------------------------------------------------------------------");
+            System.out.println("Client connected to server: " + SERVER_ADDRESS  + " on port: " + SERVER_PORT);
+            System.out.println("--------------------------------------------------------------------");
 
             client.listenForMessages();
             client.sendMessage();
