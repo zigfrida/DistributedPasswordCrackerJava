@@ -9,6 +9,7 @@ public class PasswordCracker {
     private String salt;
     private String saltPasswordHash;
     private volatile boolean passwordFound = false;
+    private volatile boolean shouldStop = false;
 
     public PasswordCracker(String prefixRange, String salt, String saltPasswordHash) {
         this.prefixRange = prefixRange;

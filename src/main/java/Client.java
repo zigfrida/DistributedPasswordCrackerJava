@@ -13,6 +13,7 @@ public class Client {
     private BufferedWriter out;
     private BufferedReader in;
 
+    private Thread crackerThread;
     private boolean found = false;
 
     PasswordCracker cracker;
@@ -39,6 +40,7 @@ public class Client {
                     out.write("FOUND");
                     out.newLine();
                     out.flush();
+                    break;
                 } else if (userInput.equalsIgnoreCase("quit")) {
                     System.out.println("Disconnecting from server...");
                     socket.close();
@@ -95,7 +97,11 @@ public class Client {
                             System.out.println("Received hash: " + saltPasswordHash);
                             System.out.println("Prefix received: " + prefixRange);
                             cracker = new PasswordCracker(prefixRange, salt, saltPasswordHash);
-                            found = cracker.bruteForceThreads();
+                            crackerThread = new Thread(() -> {
+                                found = cracker.bruteForceThreads();
+                                checkTerminate();
+                            });
+                            crackerThread.start();
                         } else if (serverMessage.equals("STOP")) {
                             System.out.println("Received stop command");
                             try {

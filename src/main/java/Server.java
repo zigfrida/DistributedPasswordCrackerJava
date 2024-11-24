@@ -44,6 +44,7 @@ public class Server {
     public synchronized void passwordFound() {
         System.out.println("Password has been found! Stopping all clients...");
         broadCastMessage("STOP");
+        System.exit(0);
     }
 
     private void handleServerCommands() {
@@ -52,9 +53,6 @@ public class Server {
             String command = scanner.nextLine();
             switch (command.toLowerCase()) {
                 case "start":
-                    sendCrackInfo();
-                    break;
-                case "crack":
                     sendCrackInfo();
                     break;
                 case "stop":
