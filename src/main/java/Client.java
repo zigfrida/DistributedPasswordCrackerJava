@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 public class Client {
 
-    private static final String SERVER_ADDRESS = "localhost";
+    private static final String SERVER_ADDRESS = "192.168.0.7";
     private static final int SERVER_PORT = 1235;
     private static String prefixRange = "FGHIJKLMNOPQRSTUVWXYZ0123456789";
 
