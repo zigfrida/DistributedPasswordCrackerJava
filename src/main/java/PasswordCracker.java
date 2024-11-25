@@ -3,7 +3,7 @@ import org.apache.commons.codec.digest.Crypt;
 public class PasswordCracker {
 
     private static final String CHARSET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    private static final int MAX_PASSWORD_LENGTH = 4;
+    private static final int MAX_PASSWORD_LENGTH = 3;
     private static final int THREAD_COUNT = 4;
     private String prefixRange;
     private String salt;
