@@ -63,3 +63,4 @@ testmd5_tes:$1$zARNc.Ve$vuEFgJXcjSuxHzsmYExfU1:20026:0:99999:7:::
 testsha256_tes:$5$WldDgu.B50ih5bXs$0N3.KG.49k.H3cBVY.xICNmBP7iU1qkDyH42VFoxPB/:20026:0:99999:7:::
 testsha512_tes:$6$i39i0ND47fjfvcik$aDPrTdMSDUSpD3n4DxkpFAI0lRmL9PU.ZrfIH9w4iVjj4SBWfP98fp2Krm2Mhn7wxxlirSEOzu/s5of8pQ8.J1:20026:0:99999:7:::
 testsha512_mes:$6$9YTZ.Qbab5FXnA7f$8yxHZ7SMYCpdqhhmfAn3scDlSmQETY9NK9W8B9Vk/o6Kjbn4aUrr3usNwUwcjI4RML0QkNuuO73MDfTe24Udh.:20026:0:99999:7:::
+testsha512_test:$6$68WOEWNZ0ff7m/QU$Hbnijkdpida5QVtARlmDBfdOjcxSs8v1WctC21nnCyoFAMMVwU4vFRYnnUzS9FF9o7vDugQkMQp/Bqr1TWDOt0:20052:0:99999:7:::
