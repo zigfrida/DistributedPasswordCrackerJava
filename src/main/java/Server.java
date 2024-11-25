@@ -52,10 +52,27 @@ public class Server {
     }
 
     public synchronized void passwordFound() {
-        long elapsedTimeSeconds = (System.nanoTime() - start) / 1000000000;
-        long minutes = elapsedTimeSeconds / 60;
-        long reminderSeconds = elapsedTimeSeconds % 60;
-        System.out.println("Elapsed time: " + minutes + " minutes and " + reminderSeconds + " seconds.");
+//        long elapsedTimeSeconds = (System.nanoTime() - start) / 1000000000;
+//        long minutes = elapsedTimeSeconds / 60;
+//        long reminderSeconds = elapsedTimeSeconds % 60;
+//        System.out.println("Elapsed time: " + minutes + " minutes and " + reminderSeconds + " seconds.");
+        // Elapsed time in nanoseconds
+        long elapsedTimeNano = System.nanoTime() - start;
+
+        // Convert to milliseconds
+        long elapsedTimeMillis = elapsedTimeNano / 1_000_000;
+
+        // Calculate minutes, seconds, and milliseconds
+        long minutes = elapsedTimeMillis / 60000;
+        long remainderMillis = elapsedTimeMillis % 60000;
+        long seconds = remainderMillis / 1000;
+        long milliseconds = remainderMillis % 1000;
+
+        // Print elapsed time
+        System.out.println("Elapsed time: " + minutes + " minutes, "
+                + seconds + " seconds, and "
+                + milliseconds + " milliseconds.");
+
 
         System.out.println("\nPassword found. Stopping all clients...");
         broadCastMessage("STOP");
